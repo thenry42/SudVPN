@@ -21,6 +21,7 @@ LIBS		= -lGL -ldl `sdl2-config --libs`
 #===================================================================#
 
 SRCS		=	src/main.cpp \
+				src/UserInterface.cpp \
 				src/NordVPN.cpp \
 				imgui/imgui.cpp \
 			  	imgui/imgui_demo.cpp \

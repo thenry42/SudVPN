@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+#include <map>
 
 #define NORDVPN "nordvpn"
 #define LOGIN "login"
@@ -22,7 +24,34 @@
 using namespace std;
 
 class NordVPN {
+    
+    private:
+
+        // Location 
+        vector<string> _countries;
+        vector<string> _cities;
+        vector<string> _groups;
+        map<string, vector<string>> _serverLocation;
+        
+        // Status
+        bool _isLogged;
+        bool _isConnected;
+        string _version;
+
+        // Settings
+        bool _firewall;
+        bool _routing;
+        bool _analytics;
+        bool _killSwitch;
+        bool _ThreatProtectionLite;
+        bool _autoConnect;
+        bool _IPv6;
+        bool _meshnet;
+        bool _dns;
+        bool _lanDiscovery;
+    
     public:
+
         NordVPN();
         ~NordVPN();
         void login();
@@ -38,6 +67,9 @@ class NordVPN {
         void help();
         void version();
         void settings();
+
+        bool isLogged() const;
+        bool isConnected() const;
 
         void runCommand(const string&);
         void runCommand(const string&, const string&);
