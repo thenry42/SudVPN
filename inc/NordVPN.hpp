@@ -6,8 +6,9 @@
 #include <vector>
 #include <map>
 
-#define NORDVPN "nordvpn"
-#define LOGIN "login"
+#define LOGIN "nordvpn login | awk '{print $5}'"
+#define XDG_OPEN "xdg-open"
+#define SPACE " "
 #define LOGOUT "logout"
 #define CONNECT "connect"
 #define DISCONNECT "disconnect"
@@ -71,10 +72,7 @@ class NordVPN {
         bool isLogged() const;
         bool isConnected() const;
 
-        void runCommand(const string&);
-        void runCommand(const string&, const string&);
-        void runCommand(const string&, const string&, const string&);
-        void runCommand(const string&, const string&, const string&, const string&);
+        string runCommand(const string&);
 };
 
 #endif

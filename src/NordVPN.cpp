@@ -21,6 +21,13 @@ NordVPN::~NordVPN() {}
 
 void NordVPN::login()
 {
+    if (_isLogged)
+        return;
+    
+    string cmd = runCommand(LOGIN);
+    cmd.erase(cmd.end() - 1);
+    cmd = runCommand(std::string(XDG_OPEN) + std::string(SPACE) + cmd);
+    cout << cmd << endl;
     _isLogged = true;
 }
 
@@ -85,24 +92,20 @@ void NordVPN::settings()
     cout << "Settings" << endl;
 }
 
-void NordVPN::runCommand(const string& cmd)
+string NordVPN::runCommand(const string& cmd)
 {
-    (void)cmd;
-}
-
-void NordVPN::runCommand(const string& cmd, const string& arg1)
-{
-    (void)cmd, (void)arg1;
-}
-
-void NordVPN::runCommand(const string& cmd, const string& arg1, const string& arg2)
-{
-    (void)cmd, (void)arg1, (void)arg2;
-}
-
-void NordVPN::runCommand(const string& cmd, const string& arg1, const string& arg2, const string& arg3)
-{
-    (void)cmd, (void)arg1, (void)arg2, (void)arg3;
+    FILE *pipe = popen(cmd.c_str(), "r");
+    if (!pipe)
+        return (NULL);
+    char buffer[256];
+    string result = "";
+    while (!feof(pipe))
+    {
+        if (fgets(buffer, 256, pipe) != NULL)
+            result += buffer;
+    }
+    pclose(pipe);
+    return (result);
 }
 
 bool NordVPN::isLogged() const
