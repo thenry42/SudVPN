@@ -6,9 +6,6 @@
 #include <vector>
 #include <map>
 
-#define LOGIN "nordvpn login | awk '{print $5}'"
-#define XDG_OPEN "xdg-open"
-#define SPACE " "
 #define LOGOUT "logout"
 #define CONNECT "connect"
 #define DISCONNECT "disconnect"

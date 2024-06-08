@@ -110,8 +110,6 @@ void UserInterface::update(NordVPN& nv)
     if (ImGui::Button("Login"))
         nv.login();
 
-    (void)nv;
-
     // DO NOT REMOVE
     ImGui::End();
 }

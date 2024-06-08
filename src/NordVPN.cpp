@@ -22,13 +22,33 @@ NordVPN::~NordVPN() {}
 void NordVPN::login()
 {
     if (_isLogged)
-        return;
-    
-    string cmd = runCommand(LOGIN);
+        return ;
+ 
+    string cmd = runCommand("nordvpn login | awk '{print $5}'");
+    if (cmd.find("You are already logged in.") != string::npos)
+    {
+        cout << "You are already logged in." << endl;
+        _isLogged = true;
+        return ;
+    }  
     cmd.erase(cmd.end() - 1);
-    cmd = runCommand(std::string(XDG_OPEN) + std::string(SPACE) + cmd);
+    cout << cmd << endl; 
+    cmd = runCommand("xdg-open " + cmd);
     cout << cmd << endl;
-    _isLogged = true;
+    string link;
+    cout << "You are expected to give a link to login to your NordVPN account" << endl;
+
+    cin >> link; // WILL USE A TEXT INPUT WITH HINT FROM IMGUI
+
+    cmd = runCommand("nordvpn login --callback \"" + link + "\"");
+
+    if (cmd.find("Welcome to NordVPN!") != string::npos)
+    {
+        cout << "You are logged in now." << endl;
+        _isLogged = true;
+    }
+    else
+        cout << "You are not logged in." << endl;
 }
 
 void NordVPN::logout()

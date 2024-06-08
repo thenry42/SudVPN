@@ -2,7 +2,6 @@
 #define USERINTERFACE_HPP
 
 #include "imgui.h"
-#include "UserInterface.hpp"
 #include <SDL2/SDL.h>
 #include "NordVPN.hpp"
 #include "imgui_impl_sdl2.h"
