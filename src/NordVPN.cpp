@@ -130,25 +130,26 @@ void NordVPN::cities()
 
         // Parse cities string to vector
         string city;
+        vector<string> tmp;
         for (char c : cities)
         {
             if (c == ' ')
             {
-                _cities.push_back(city);
+                tmp.push_back(city);
                 city.clear();
             }
             else
                 city += c;
         }
-        _serverLocation[_countries[i]] = _cities;
+        _serverLocation[_countries[i]] = tmp;
     }
 
     // Display cities per country
     for (auto it = _serverLocation.begin(); it != _serverLocation.end(); it++)
     {
         cout << it->first << endl;
-        for (size_t i = 0; i < it->second.size(); i++)
-            cout << it->second[i] << endl;
+        for (auto itt = it->second.begin(); itt != it->second.end(); itt++)
+            cout << *itt << endl;
         cout << "-----------------" << endl;
     }
 }
