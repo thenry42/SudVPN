@@ -38,7 +38,7 @@ void NordVPN::login()
     string link;
     cout << "You are expected to give a link to login to your NordVPN account" << endl;
 
-    cin >> link; // WILL USE A TEXT INPUT WITH HINT FROM IMGUI
+    //cin >> link; // WILL USE A TEXT INPUT WITH HINT FROM IMGUI
 
     cmd = runCommand("nordvpn login --callback \"" + link + "\"");
 
@@ -58,7 +58,26 @@ void NordVPN::logout()
 
 void NordVPN::connect()
 {
-    _isConnected = true;
+    /*
+    if (!_isLogged)
+    {
+        cout << "You need to login first." << endl;
+        return ;
+    }
+    */
+    string cmd = runCommand("nordvpn connect");
+    if (cmd.find("You are not logged in.") != string::npos)
+    {
+        cout << "You are not logged in." << endl;
+        _isLogged = false;
+    }
+    else if (cmd.find("You are connected to") != string::npos)
+    {
+        cout << "You are connected." << endl;
+        _isConnected = true;
+    }
+    else
+        cout << "You are not connected." << endl;
 }
 
 void NordVPN::disconnect()
@@ -74,17 +93,87 @@ void NordVPN::status()
 
 void NordVPN::countries()
 {
-    cout << "Countries" << endl;
+    cout << "### Countries Command ###" << endl;
+
+    string countries = runCommand("nordvpn countries | sed 's/\t/ /g' | awk '{for (i=1; i<=NF; i++) printf \"%s \", $i} END {print \"\"}'");
+
+    // Parse countries string to vector
+    string country;
+    for (char c : countries)
+    {
+        if (c == ' ')
+        {
+            _countries.push_back(country);
+            country.clear();
+        }
+        else
+            country += c;
+    }
+
+    /*
+    // Display countries
+    for (string c : _countries)
+        cout << c << endl;
+    */
 }
 
 void NordVPN::cities()
 {
-    cout << "Cities" << endl;
+    cout << "### Cities Command ###" << endl;
+
+    if (_countries.empty())
+        countries();
+
+    for (size_t i = 0; i < _countries.size(); i++)
+    {
+        string cities = runCommand("nordvpn cities \"" + _countries[i] + "\" | sed 's/\t/ /g' | awk '{for (i=1; i<=NF; i++) printf \"%s \", $i} END {print \"\"}'");
+
+        // Parse cities string to vector
+        string city;
+        for (char c : cities)
+        {
+            if (c == ' ')
+            {
+                _cities.push_back(city);
+                city.clear();
+            }
+            else
+                city += c;
+        }
+        _serverLocation[_countries[i]] = _cities;
+    }
+
+    // Display cities per country
+    for (auto it = _serverLocation.begin(); it != _serverLocation.end(); it++)
+    {
+        cout << it->first << endl;
+        for (size_t i = 0; i < it->second.size(); i++)
+            cout << it->second[i] << endl;
+        cout << "-----------------" << endl;
+    }
 }
 
 void NordVPN::groups()
 {
-    cout << "Groups" << endl;
+    cout << "### Groups Command ###" << endl;
+    string groups = runCommand("nordvpn groups | sed 's/\t/ /g' | awk '{for (i=1; i<=NF; i++) printf \"%s \", $i} END {print \"\"}'");
+    
+    // Parse cities string to vector
+    string group;
+    for (char c : groups)
+    {
+        if (c == ' ')
+        {
+            _groups.push_back(group);
+            group.clear();
+        }
+        else
+            group += c;
+    }
+
+    // Display Groups
+    for (string c : _groups)
+        cout << c << endl;
 }
 
 void NordVPN::account()
@@ -104,6 +193,7 @@ void NordVPN::help()
 
 void NordVPN::version()
 {
+    _version = runCommand("nordvpn --version");
     cout << "Version: " << _version << endl;
 }
 

@@ -109,6 +109,26 @@ void UserInterface::update(NordVPN& nv)
     ImGui::Text("%s", (nv.isLogged() ? "Yes" : "No"));
     if (ImGui::Button("Login"))
         nv.login();
+    if (ImGui::Button("Connect"))
+        nv.connect();
+    if (ImGui::Button("Countries"))
+        nv.countries();
+    if (ImGui::Button("Disconnect"))
+        nv.disconnect();
+    if (ImGui::Button("Status"))
+        nv.status();
+    if (ImGui::Button("Logout"))
+        nv.logout();
+    if (ImGui::Button("Groups"))
+        nv.groups();
+    if (ImGui::Button("Cities"))
+        nv.cities();
+    if (ImGui::Button("Account"))
+        nv.account();
+    if (ImGui::Button("Version"))
+        nv.version();
+    if (ImGui::Button("Exit"))
+        running = false;
 
     // DO NOT REMOVE
     ImGui::End();
