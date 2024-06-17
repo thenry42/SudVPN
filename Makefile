@@ -1,5 +1,5 @@
 #===================================================================#
-# IMGUI BUILD THAT WORK MY ASUS G14                                 #
+# IMGUI BUILD THAT WORK ON MY ASUS G14 RUNNING NOBARA               #
 #===================================================================#
 
 # example_glfw_opengl2 (not the greatest)

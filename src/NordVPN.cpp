@@ -2,82 +2,100 @@
 
 NordVPN::NordVPN()
 {
-    _isLogged = false;
-    _isConnected = false;
-    _version = "0.0.1";
-    _firewall = false;
+    // SETTINGS
+    _dns = false;
+    _IPv6 = false;
     _routing = false;
+    _meshnet = false;
+    _isLogged = false;
+    _firewall = false;
+    _version = "0.0.1";
     _analytics = false;
     _killSwitch = false;
-    _ThreatProtectionLite = false;
     _autoConnect = false;
-    _IPv6 = false;
-    _meshnet = false;
-    _dns = false;
+    _isConnected = false;
     _lanDiscovery = false;
+    _ThreatProtectionLite = false;
+
+    // ACCOUNT INFORMATION
+    _email = "blob@blob.com";
+    _vpnService = "NordVPN";
 }
 
 NordVPN::~NordVPN() {}
 
 void NordVPN::login()
 {
-    if (_isLogged)
+    if (_isLogged == true)
         return ;
  
-    string cmd = runCommand("nordvpn login | awk '{print $5}'");
-    if (cmd.find("You are already logged in.") != string::npos)
+    string cmd = runCommand(CMD_LOGIN);
+    if (cmd.find(RPL_LOGGED_IN) != string::npos)
     {
-        cout << "You are already logged in." << endl;
         _isLogged = true;
+        cout << GREEN "You are already logged in now." << endl;
         return ;
-    }  
-    cmd.erase(cmd.end() - 1);
-    cout << cmd << endl; 
-    cmd = runCommand("xdg-open " + cmd);
-    cout << cmd << endl;
-    string link;
-    cout << "You are expected to give a link to login to your NordVPN account" << endl;
-
-    //cin >> link; // WILL USE A TEXT INPUT WITH HINT FROM IMGUI
-
-    cmd = runCommand("nordvpn login --callback \"" + link + "\"");
-
-    if (cmd.find("Welcome to NordVPN!") != string::npos)
-    {
-        cout << "You are logged in now." << endl;
-        _isLogged = true;
     }
     else
-        cout << "You are not logged in." << endl;
+    {
+        cmd = runCommand(CMD_LOGIN_LINK);
+        cmd.erase(cmd.end() - 1); // Remove the last character that is a new line
+        cmd = runCommand(CMD_OPEN_LINK + cmd);
+        
+        string link;
+        cout << BLUE "You are expected to give a link to login to your NordVPN account" << endl;
+        
+        cin >> link; // WILL USE A TEXT INPUT WITH HINT FROM IMGUI
+
+        cmd = runCommand(CMD_LOGIN_CALLBACK + link + DB_QUOTE);
+
+        if (cmd.find(RPL_WELCOME) != string::npos)
+        {
+            cout << GREEN "You are logged in now." << endl;
+            _isLogged = true;
+        }
+        else
+        {
+            cout << RED "You are not logged in." << endl;
+        }
+    }
 }
 
 void NordVPN::logout()
 {
-    _isLogged = false;
+    string cmd = runCommand(CMD_LOGOUT);
+    if (cmd.find(RPL_LOGGED_OUT) != string::npos)
+    {
+        cout << GREEN "You are logged out." << endl;
+        _isLogged = false;
+    }
+    else
+    {
+        cout << RED "You are not logged in." << endl;
+    }
 }
 
 void NordVPN::connect()
 {
-    /*
-    if (!_isLogged)
+    string cmd = runCommand(CMD_CONNECT);
+    if (cmd.find(RPL_NOT_LOGGED_IN) != string::npos || !_isLogged)
     {
-        cout << "You need to login first." << endl;
+        cout << RED "You need to login first." << endl;
         return ;
     }
-    */
-    string cmd = runCommand("nordvpn connect");
-    if (cmd.find("You are not logged in.") != string::npos)
-    {
-        cout << "You are not logged in." << endl;
-        _isLogged = false;
-    }
-    else if (cmd.find("You are connected to") != string::npos)
-    {
-        cout << "You are connected." << endl;
-        _isConnected = true;
-    }
     else
-        cout << "You are not connected." << endl;
+    {
+        cmd = runCommand(CMD_CONNECT);
+        if (cmd.find(RPL_CONNECTED) != string::npos)
+        {
+            cout << GREEN "You are connected." << endl;
+            _isConnected = true;
+        }
+        else
+        {
+            cout << RED "You are not connected." << endl;
+        }
+    }
 }
 
 void NordVPN::disconnect()
@@ -194,8 +212,8 @@ void NordVPN::help()
 
 void NordVPN::version()
 {
-    _version = runCommand("nordvpn --version");
-    cout << "Version: " << _version << endl;
+    _version = runCommand(CMD_VERSION);
+    cout << GREEN << _version << endl;
 }
 
 void NordVPN::settings()
@@ -227,4 +245,19 @@ bool NordVPN::isLogged() const
 bool NordVPN::isConnected() const
 {
     return _isConnected;
+}
+
+string NordVPN::getEmail(void) const
+{
+    return _email;
+}
+
+string NordVPN::getVpnService(void) const
+{
+    return _vpnService;
+}
+
+void NordVPN::getCurrentConfiguration(void)
+{
+    
 }

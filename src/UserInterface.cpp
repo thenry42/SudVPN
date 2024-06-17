@@ -82,6 +82,10 @@ void UserInterface::update(NordVPN& nv)
         {
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Locations"))
+        {
+            ImGui::EndMenu();
+        }
         if (ImGui::BeginMenu("Settings"))
         {
             ImGui::MenuItem("Firewall");
@@ -96,6 +100,10 @@ void UserInterface::update(NordVPN& nv)
             ImGui::MenuItem("LAN Discovery");
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Configuration"))
+        {
+            ImGui::EndMenu();
+        }
         if (ImGui::BeginMenu("Help"))
         {
             ImGui::EndMenu();
@@ -103,10 +111,56 @@ void UserInterface::update(NordVPN& nv)
         ImGui::EndMenuBar();
     }
 
-    // Main Window Content
-    ImGui::SeparatorText("Status");
+    // MAIN WINDOW CONTENT
+    ImGui::SeparatorText("Account Information");
+    ImGui::NewLine();
+    if (nv.isLogged() == true)
+    {
+        ImGui::Text("Email Address: %s", nv.getEmail().c_str());
+        ImGui::Text("Username: %s", nv.getVpnService().c_str());
+    }
+    else
+    {
+        ImGui::Text("You need to be logged in to access account information.");
+    }
+    ImGui::NewLine();
 
-    ImGui::Text("%s", (nv.isLogged() ? "Yes" : "No"));
+    ImGui::SeparatorText("Status");
+    ImGui::NewLine();
+    if (nv.isLogged() == true)
+        ImGui::Text("You are logged in");
+    else
+    {
+        ImGui::Text("You are not logged in");
+        ImGui::SameLine();
+        if (ImGui::Button("Login"))
+            nv.login();
+    }
+    ImGui::NewLine();
+    if (nv.isConnected() == true)
+        ImGui::Text("You are connected");
+    else
+    {
+        ImGui::Text("You are not connected");
+        ImGui::SameLine();
+        if (ImGui::Button("Connect"))
+            nv.connect();
+    }
+    ImGui::NewLine();
+
+    ImGui::SeparatorText("Locations");
+    ImGui::NewLine();
+    if (nv.isConnected() == true)
+    {
+        ImGui::Text("You're current location is:");
+    }
+    else
+    {
+        ImGui::Text("You need to be connected to access location information.");
+    }
+    ImGui::NewLine();
+
+    /*
     if (ImGui::Button("Login"))
         nv.login();
     if (ImGui::Button("Connect"))
@@ -127,9 +181,19 @@ void UserInterface::update(NordVPN& nv)
         nv.account();
     if (ImGui::Button("Version"))
         nv.version();
+    */
+
+    ImGui::SeparatorText("Actions");
+    ImGui::NewLine();
+    if (ImGui::Button("Disconnect") && nv.isConnected() == true)
+        nv.disconnect();
+    ImGui::SameLine();
+    if (ImGui::Button("Logout") && nv.isLogged() == true)
+        nv.logout();
+    ImGui::SameLine(); 
     if (ImGui::Button("Exit"))
         running = false;
-
+    
     // DO NOT REMOVE
     ImGui::End();
 }

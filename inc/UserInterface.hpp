@@ -12,17 +12,19 @@ class UserInterface {
     public:
         
         bool running;
-        SDL_WindowFlags window_flags;
+        
+        ImGuiIO* io;
         SDL_Window* window;
         SDL_Renderer* renderer;
-        ImGuiIO* io;
+        SDL_WindowFlags window_flags;
 
         UserInterface();
         ~UserInterface();
-        int init(void);
-        void update(NordVPN& nv);
-        void render(void);
-        void destroy(void);
+        
+        int     init(void);
+        void    render(void);
+        void    destroy(void);
+        void    update(NordVPN& nv);
 
 };
 

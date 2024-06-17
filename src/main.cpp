@@ -1,14 +1,14 @@
 #include "imgui.h"
-#include "UserInterface.hpp"
 #include <SDL2/SDL.h>
 #include "NordVPN.hpp"
 #include "imgui_impl_sdl2.h"
+#include "UserInterface.hpp"
 #include "imgui_impl_sdlrenderer2.h"
 
 int main(void)
 {
-	UserInterface ui;
 	NordVPN nv;
+	UserInterface ui;
 
 	// Initialize the UserInterface
 	if (ui.init() == -1)
