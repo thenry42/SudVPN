@@ -61,10 +61,6 @@ void NordVPN::loginCallback(void)
         _isLogged = true;
         _waitingCallbackLink = false;
     }
-    else
-    {
-        cout << RED "You are not logged in." << endl;
-    }
 }
 
 void NordVPN::logout()

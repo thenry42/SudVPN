@@ -112,6 +112,8 @@ void UserInterface::update(NordVPN& nv)
     }
 
     // MAIN WINDOW CONTENT
+    
+    // Account Information
     ImGui::SeparatorText("Account Information");
     ImGui::NewLine();
     if (nv.isLogged() == true)
@@ -125,6 +127,8 @@ void UserInterface::update(NordVPN& nv)
     }
     ImGui::NewLine();
 
+
+    // Status
     ImGui::SeparatorText("Status");
     ImGui::NewLine();
     if (nv.isLogged() == true)
@@ -132,7 +136,7 @@ void UserInterface::update(NordVPN& nv)
     else
     {
         ImGui::Text("You are not logged in");
-        ImGui::SameLine();
+        ImGui::NewLine();
         if (ImGui::Button("Login"))
             nv.login();
         ImGui::SameLine();
@@ -140,20 +144,25 @@ void UserInterface::update(NordVPN& nv)
         {
             ImGui::InputTextWithHint(" ", "enter text here", nv.buffer, 512);
             nv.setCallbackLink(nv.buffer);
+            nv.loginCallback();
+        }
+    }
+    
+    if (nv.isWaitingCallbackLink() == false && nv.isLogged() == true)
+    {
+        if (nv.isConnected() == true)
+            ImGui::Text("You are connected");
+        else
+        {
+            ImGui::Text("You are not connected");
+            ImGui::SameLine();
+            if (ImGui::Button("Connect"))
+                nv.connect();
         }
     }
     ImGui::NewLine();
-    if (nv.isConnected() == true)
-        ImGui::Text("You are connected");
-    else
-    {
-        ImGui::Text("You are not connected");
-        ImGui::SameLine();
-        if (ImGui::Button("Connect"))
-            nv.connect();
-    }
-    ImGui::NewLine();
 
+    // Locations
     ImGui::SeparatorText("Locations");
     ImGui::NewLine();
     if (nv.isConnected() == true)
@@ -166,37 +175,23 @@ void UserInterface::update(NordVPN& nv)
     }
     ImGui::NewLine();
 
-    /*
-    if (ImGui::Button("Login"))
-        nv.login();
-    if (ImGui::Button("Connect"))
-        nv.connect();
-    if (ImGui::Button("Countries"))
-        nv.countries();
-    if (ImGui::Button("Disconnect"))
-        nv.disconnect();
-    if (ImGui::Button("Status"))
-        nv.status();
-    if (ImGui::Button("Logout"))
-        nv.logout();
-    if (ImGui::Button("Groups"))
-        nv.groups();
-    if (ImGui::Button("Cities"))
-        nv.cities();
-    if (ImGui::Button("Account"))
-        nv.account();
-    if (ImGui::Button("Version"))
-        nv.version();
-    */
 
+    // Actions
     ImGui::SeparatorText("Actions");
     ImGui::NewLine();
-    if (ImGui::Button("Disconnect") && nv.isConnected() == true)
-        nv.disconnect();
-    ImGui::SameLine();
-    if (ImGui::Button("Logout") && nv.isLogged() == true)
-        nv.logout();
-    ImGui::SameLine(); 
+    
+    if (nv.isConnected() == true && nv.isLogged() == true)
+    {
+        if (ImGui::Button("Disconnect"))
+            nv.disconnect();
+        ImGui::SameLine();
+    }
+    if (nv.isLogged() == true)
+    {
+        if (ImGui::Button("Logout") && nv.isLogged() == true)
+            nv.logout();
+        ImGui::SameLine(); 
+    }
     if (ImGui::Button("Exit"))
         running = false;
     
