@@ -11,7 +11,7 @@
 #define RED "\033[0;31m"
 
 #define DB_QUOTE "\""
-#define CMD_OPEN_LINK "xdg-open "
+#define CMD_OPEN_LINK "firefox "
 #define CMD_LOGIN "nordvpn login"
 #define CMD_LOGIN_LINK "nordvpn login | awk '{print $5}'"
 #define CMD_LOGIN_CALLBACK "nordvpn login --callback \""
@@ -39,6 +39,7 @@ class NordVPN {
         
         // Status
         bool    _isLogged;
+        bool    _waitingCallbackLink;
         bool    _isConnected;
         string  _version;
 
@@ -57,8 +58,13 @@ class NordVPN {
         // Account Information
         string _email;
         string _vpnService;
-    
+
+        // Callback link
+        string _callbackLink;
+
     public:
+
+        char* buffer;
 
         NordVPN();
         ~NordVPN();
@@ -78,12 +84,16 @@ class NordVPN {
 
         bool isLogged() const;
         bool isConnected() const;
+        bool isWaitingCallbackLink() const;
 
         string runCommand(const string&);
 
         string getEmail(void) const;
         string getVpnService(void) const;
         void getCurrentConfiguration(void);
+        void loginCallback(void);
+
+        void setCallbackLink(const string&);
 };
 
 #endif

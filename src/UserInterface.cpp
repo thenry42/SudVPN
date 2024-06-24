@@ -135,6 +135,12 @@ void UserInterface::update(NordVPN& nv)
         ImGui::SameLine();
         if (ImGui::Button("Login"))
             nv.login();
+        ImGui::SameLine();
+        if (nv.isWaitingCallbackLink() == true)
+        {
+            ImGui::InputTextWithHint(" ", "enter text here", nv.buffer, 512);
+            nv.setCallbackLink(nv.buffer);
+        }
     }
     ImGui::NewLine();
     if (nv.isConnected() == true)

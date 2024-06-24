@@ -31,7 +31,7 @@ SRCS		=	src/main.cpp \
 			  	imgui/backends/imgui_impl_sdl2.cpp \
 			  	imgui/backends/imgui_impl_sdlrenderer2.cpp
 
-NAME		=	sudVPN
+NAME		=	SudVPN
 
 OBJDIR		=	obj
 

@@ -20,6 +20,10 @@ NordVPN::NordVPN()
     // ACCOUNT INFORMATION
     _email = "blob@blob.com";
     _vpnService = "NordVPN";
+
+    // CALLBACK LINK
+    _waitingCallbackLink = true;
+    buffer = new char[512];
 }
 
 NordVPN::~NordVPN() {}
@@ -40,24 +44,26 @@ void NordVPN::login()
     {
         cmd = runCommand(CMD_LOGIN_LINK);
         cmd.erase(cmd.end() - 1); // Remove the last character that is a new line
+        
+        // For some reason, Firefox needs to be open before clicking on "login"
         cmd = runCommand(CMD_OPEN_LINK + cmd);
-        
-        string link;
         cout << BLUE "You are expected to give a link to login to your NordVPN account" << endl;
-        
-        cin >> link; // WILL USE A TEXT INPUT WITH HINT FROM IMGUI
+    }
+}
 
-        cmd = runCommand(CMD_LOGIN_CALLBACK + link + DB_QUOTE);
+void NordVPN::loginCallback(void)
+{
+    string cmd = runCommand(CMD_LOGIN_CALLBACK + string(buffer) + DB_QUOTE);
 
-        if (cmd.find(RPL_WELCOME) != string::npos)
-        {
-            cout << GREEN "You are logged in now." << endl;
-            _isLogged = true;
-        }
-        else
-        {
-            cout << RED "You are not logged in." << endl;
-        }
+    if (cmd.find(RPL_WELCOME) != string::npos)
+    {
+        cout << GREEN "You are logged in now." << endl;
+        _isLogged = true;
+        _waitingCallbackLink = false;
+    }
+    else
+    {
+        cout << RED "You are not logged in." << endl;
     }
 }
 
@@ -260,4 +266,14 @@ string NordVPN::getVpnService(void) const
 void NordVPN::getCurrentConfiguration(void)
 {
     
+}
+
+bool NordVPN::isWaitingCallbackLink() const
+{
+    return _waitingCallbackLink;
+}
+
+void NordVPN::setCallbackLink(const string& link)
+{
+    _callbackLink = link;
 }
