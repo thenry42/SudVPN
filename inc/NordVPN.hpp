@@ -18,12 +18,14 @@
 #define CMD_LOGOUT "nordvpn logout"
 #define CMD_CONNECT "nordvpn connect"
 #define CMD_VERSION "nordvpn --version"
+#define CMD_DISCONNECT "nordvpn disconnect"
 
 #define RPL_LOGGED_IN "You are already logged in."
 #define RPL_NOT_LOGGED_IN "You are not logged in."
 #define RPL_WELCOME "Welcome to NordVPN!"
 #define RPL_LOGGED_OUT "You are logged out."
 #define RPL_CONNECTED "You are connected"
+#define RPL_DISCONNECTED "You are disconnected"
 
 using namespace std;
 
@@ -32,16 +34,16 @@ class NordVPN {
     private:
 
         // Location 
-        vector<string> _cities;
-        vector<string> _groups;
-        vector<string> _countries;
+        vector<string>  _cities;
+        vector<string>  _groups;
+        vector<string>  _countries;
         map<string, vector<string>> _serverLocation;
         
         // Status
-        bool    _isLogged;
-        bool    _waitingCallbackLink;
-        bool    _isConnected;
         string  _version;
+        bool    _isLogged;
+        bool    _isConnected;
+        bool    _waitingCallbackLink;
 
         // Settings
         bool _dns;
@@ -57,6 +59,7 @@ class NordVPN {
 
         // Account Information
         string _email;
+        string _username;
         string _vpnService;
 
         // Callback link
@@ -66,8 +69,23 @@ class NordVPN {
 
         char* buffer;
 
+        // Constructor and Destructor (No coplien form coz idc)
         NordVPN();
-        ~NordVPN();
+        ~NordVPN(); 
+
+        // Getters
+        bool isLogged() const;
+        bool isConnected() const;
+        bool isWaitingCallbackLink() const;
+        string getEmail(void) const;
+        string getUsername(void) const;
+        string getVpnService(void) const;
+        void getCurrentConfiguration(void);
+
+        // Setters
+        void setCallbackLink(const string&);
+
+        // Methods
         void set();
         void help();
         void login();
@@ -80,20 +98,9 @@ class NordVPN {
         void version();
         void settings();
         void countries();
-        void disconnect();
-
-        bool isLogged() const;
-        bool isConnected() const;
-        bool isWaitingCallbackLink() const;
-
-        string runCommand(const string&);
-
-        string getEmail(void) const;
-        string getVpnService(void) const;
-        void getCurrentConfiguration(void);
+        void disconnect(); 
         void loginCallback(void);
-
-        void setCallbackLink(const string&);
+        string runCommand(const string&);
 };
 
 #endif

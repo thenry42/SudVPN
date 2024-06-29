@@ -19,10 +19,11 @@ NordVPN::NordVPN()
 
     // ACCOUNT INFORMATION
     _email = "blob@blob.com";
+    _username = "blob";
     _vpnService = "NordVPN";
 
     // CALLBACK LINK
-    _waitingCallbackLink = true;
+    _waitingCallbackLink = false;
     buffer = new char[512];
 }
 
@@ -30,6 +31,8 @@ NordVPN::~NordVPN() {}
 
 void NordVPN::login()
 {
+    _waitingCallbackLink = true;
+
     if (_isLogged == true)
         return ;
  
@@ -65,11 +68,16 @@ void NordVPN::loginCallback(void)
 
 void NordVPN::logout()
 {
-    string cmd = runCommand(CMD_LOGOUT);
+    if (_isLogged == false)
+        return ;
+    if (_isConnected == true)
+        disconnect();
+    string cmd = runCommand(CMD_LOGOUT);   
     if (cmd.find(RPL_LOGGED_OUT) != string::npos)
     {
         cout << GREEN "You are logged out." << endl;
         _isLogged = false;
+        _waitingCallbackLink = true;
     }
     else
     {
@@ -102,7 +110,16 @@ void NordVPN::connect()
 
 void NordVPN::disconnect()
 {
-    _isConnected = false;
+    string cmd = runCommand(CMD_DISCONNECT);
+    if (cmd.find(RPL_DISCONNECTED) != string::npos)
+    {
+        cout << GREEN "You are disconnected." << endl;
+        _isConnected = false;
+    }
+    else
+    {
+        cout << RED "You are not connected." << endl;
+    }
 }
 
 void NordVPN::status()
@@ -129,12 +146,6 @@ void NordVPN::countries()
         else
             country += c;
     }
-
-    /*
-    // Display countries
-    for (string c : _countries)
-        cout << c << endl;
-    */
 }
 
 void NordVPN::cities()
