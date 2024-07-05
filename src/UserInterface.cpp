@@ -109,6 +109,7 @@ void UserInterface::update(NordVPN& nv)
     // MAIN WINDOW CONTENT
     if (ImGui::CollapsingHeader("Account Information", ImGuiTreeNodeFlags_DefaultOpen))
     {
+        ImGui::Indent();
         ImGui::SeparatorText("Account Information");
         ImGui::NewLine();
         if (nv.isLogged() == true)
@@ -121,10 +122,12 @@ void UserInterface::update(NordVPN& nv)
             ImGui::Text("You need to be logged in to access account information.");
         }
         ImGui::NewLine();
+        ImGui::Unindent();
     }
 
     if (ImGui::CollapsingHeader("Actions", ImGuiTreeNodeFlags_DefaultOpen))
     {
+        ImGui::Indent();
         ImGui::SeparatorText("Status");
         if (nv.isLogged() == true)
             ImGui::Text("You are logged in");
@@ -155,10 +158,12 @@ void UserInterface::update(NordVPN& nv)
             }
         }
         ImGui::NewLine();
+        ImGui::Unindent();
     }
     
     if (ImGui::CollapsingHeader("Settings", ImGuiTreeNodeFlags_DefaultOpen))
     {
+        ImGui::Indent();
         ImGui::Checkbox("Firewall", &nv._firewall);
         ImGui::Checkbox("Routing", &nv._routing);
         ImGui::Checkbox("Analytics", &nv._analytics);
@@ -170,6 +175,7 @@ void UserInterface::update(NordVPN& nv)
         ImGui::Checkbox("DNS", &nv._dns);
         ImGui::Checkbox("LAN Discovery", &nv._lanDiscovery);
         ImGui::NewLine();
+        ImGui::Unindent();
     }
 
     // SUDVPN LOGO
@@ -239,6 +245,10 @@ void UserInterface::setCustomStyle(void)
     //style.WindowRounding = 5.0f;
     //style.FrameRounding = 4.0f;
     //style.ScrollbarRounding = 12.0f;
+    style.FramePadding = ImVec2(13, 6);
+    style.ItemSpacing = ImVec2(6, 6);
+    style.IndentSpacing = 10;
+    style.FrameRounding = 8;
 
     ImColor Main_color = ImColor(254, 138, 156, 200);
     ImColor Hovered_color = ImColor(254, 138, 156, 255);
