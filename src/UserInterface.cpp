@@ -250,8 +250,9 @@ void UserInterface::setCustomStyle(void)
     style.IndentSpacing = 10;
     style.FrameRounding = 8;
 
-    ImColor Main_color = ImColor(254, 138, 156, 200);
-    ImColor Hovered_color = ImColor(254, 138, 156, 255);
+    ImColor Menu_color = ImColor(207, 74, 100, 255);
+    ImColor Main_color = ImColor(254, 138, 156, 255);
+    ImColor Hovered_color = ImColor(239, 195, 204, 255);
     ImColor Active_color = ImColor(254, 138, 156, 255);
 
     // Set custom colors
@@ -263,7 +264,7 @@ void UserInterface::setCustomStyle(void)
     colors[ImGuiCol_Button] = Main_color;
     colors[ImGuiCol_ButtonHovered] = Hovered_color;
     colors[ImGuiCol_ButtonActive] = Active_color;
-    colors[ImGuiCol_MenuBarBg] = Main_color;
+    colors[ImGuiCol_MenuBarBg] = Menu_color;
     colors[ImGuiCol_ScrollbarBg] = Main_color;
     
     colors[ImGuiCol_Header] = Main_color;
