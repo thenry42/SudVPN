@@ -41,6 +41,7 @@ void NordVPN::login()
     {
         _isLogged = true;
         cout << GREEN "You are already logged in now." << endl;
+        _waitingCallbackLink = false;
         return ;
     }
     else

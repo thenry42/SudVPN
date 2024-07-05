@@ -250,7 +250,7 @@ void UserInterface::setCustomStyle(void)
     style.IndentSpacing = 10;
     style.FrameRounding = 8;
 
-    ImColor Menu_color = ImColor(207, 74, 100, 255);
+    ImColor Menu_color = ImColor(220, 120, 150, 255);
     ImColor Main_color = ImColor(254, 138, 156, 255);
     ImColor Hovered_color = ImColor(239, 195, 204, 255);
     ImColor Active_color = ImColor(254, 138, 156, 255);
