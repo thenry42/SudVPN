@@ -45,18 +45,6 @@ class NordVPN {
         bool    _isConnected;
         bool    _waitingCallbackLink;
 
-        // Settings
-        bool _dns;
-        bool _IPv6;
-        bool _meshnet;
-        bool _routing;
-        bool _firewall;
-        bool _analytics;
-        bool _killSwitch;
-        bool _autoConnect;
-        bool _lanDiscovery;
-        bool _ThreatProtectionLite;
-
         // Account Information
         string _email;
         string _username;
@@ -101,6 +89,19 @@ class NordVPN {
         void disconnect(); 
         void loginCallback(void);
         string runCommand(const string&);
+        
+        // Settings
+        bool _dns;
+        bool _IPv6;
+        bool _meshnet;
+        bool _routing;
+        bool _firewall;
+        bool _analytics;
+        bool _killSwitch;
+        bool _autoConnect;
+        bool _lanDiscovery;
+        bool _ThreatProtectionLite;
+
 };
 
 #endif

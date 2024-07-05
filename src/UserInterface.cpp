@@ -1,5 +1,8 @@
 #include "UserInterface.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 UserInterface::UserInterface(): running(true) {}
 
 UserInterface::~UserInterface() {}
@@ -11,8 +14,8 @@ int UserInterface::init(void)
         return (-1);
     
     // Create window with graphics context
-    window_flags = (SDL_WindowFlags)(SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
-    window = SDL_CreateWindow("SudVPN", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1280, 720, window_flags);
+    window_flags = (SDL_WindowFlags)(SDL_WINDOW_ALLOW_HIGHDPI);
+    window = SDL_CreateWindow("SudVPN", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 800, window_flags);
     if (window == nullptr)
         return (-1);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -33,6 +36,9 @@ int UserInterface::init(void)
     // Setup Platform/Renderer bindings
     ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
     ImGui_ImplSDLRenderer2_Init(renderer);
+
+    // Load Images
+    LoadTextureFromFile(LOGO_IMG, &logo_texture, &logo_width, &logo_height, renderer);
 
     return (0);
 }
@@ -80,27 +86,13 @@ void UserInterface::update(NordVPN& nv)
     {
         if (ImGui::BeginMenu("Menu"))
         {
+            ImGui::MenuItem("Account Information");
+            ImGui::MenuItem("Help");
+            if (ImGui::MenuItem("Exit"))
+                running = false;
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Locations"))
-        {
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("Settings"))
-        {
-            ImGui::MenuItem("Firewall");
-            ImGui::MenuItem("Routing");
-            ImGui::MenuItem("Analytics");
-            ImGui::MenuItem("Kill Switch");
-            ImGui::MenuItem("Threat Protection Lite");
-            ImGui::MenuItem("Auto-connect");
-            ImGui::MenuItem("IPv6");
-            ImGui::MenuItem("Meshnet");
-            ImGui::MenuItem("DNS");
-            ImGui::MenuItem("LAN Discovery");
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("Configuration"))
         {
             ImGui::EndMenu();
         }
@@ -111,90 +103,80 @@ void UserInterface::update(NordVPN& nv)
         ImGui::EndMenuBar();
     }
 
+    //STYLE
+    setCustomStyle();
+
     // MAIN WINDOW CONTENT
-    
-    // Account Information
-    ImGui::SeparatorText("Account Information");
-    ImGui::NewLine();
-    if (nv.isLogged() == true)
+    if (ImGui::CollapsingHeader("Account Information", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        ImGui::Text("Email Address: %s", nv.getEmail().c_str());
-        ImGui::Text("Username: %s", nv.getVpnService().c_str());
-    }
-    else
-    {
-        ImGui::Text("You need to be logged in to access account information.");
-    }
-    ImGui::NewLine();
-
-
-    // Status
-    ImGui::SeparatorText("Status");
-    ImGui::NewLine();
-    if (nv.isLogged() == true)
-        ImGui::Text("You are logged in");
-    else
-    {
-        ImGui::Text("You are not logged in");
+        ImGui::SeparatorText("Account Information");
         ImGui::NewLine();
-        if (ImGui::Button("Login"))
-            nv.login();
-        ImGui::SameLine();
-        if (nv.isWaitingCallbackLink() == true)
+        if (nv.isLogged() == true)
         {
-            ImGui::InputTextWithHint(" ", "enter text here", nv.buffer, 512);
-            nv.setCallbackLink(nv.buffer);
-            nv.loginCallback();
+            ImGui::Text("Email Address: %s", nv.getEmail().c_str());
+            ImGui::Text("Username: %s", nv.getVpnService().c_str());
         }
-    }
-    
-    if (nv.isWaitingCallbackLink() == false && nv.isLogged() == true)
-    {
-        if (nv.isConnected() == true)
-            ImGui::Text("You are connected");
         else
         {
-            ImGui::Text("You are not connected");
-            ImGui::SameLine();
-            if (ImGui::Button("Connect"))
-                nv.connect();
+            ImGui::Text("You need to be logged in to access account information.");
         }
+        ImGui::NewLine();
     }
-    ImGui::NewLine();
 
-    // Locations
-    ImGui::SeparatorText("Locations");
-    ImGui::NewLine();
-    if (nv.isConnected() == true)
+    if (ImGui::CollapsingHeader("Actions", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        ImGui::Text("You're current location is:");
+        ImGui::SeparatorText("Status");
+        if (nv.isLogged() == true)
+            ImGui::Text("You are logged in");
+        else
+        {
+            ImGui::Text("You are not logged in");
+            if (ImGui::Button("Login"))
+                nv.login();
+            ImGui::SameLine();
+            if (nv.isWaitingCallbackLink() == true)
+            {
+                ImGui::InputTextWithHint(" ", "enter text here", nv.buffer, 512);
+                nv.setCallbackLink(nv.buffer);
+                nv.loginCallback();
+            }
+            ImGui::NewLine();
+        }
+        if (nv.isWaitingCallbackLink() == false && nv.isLogged() == true)
+        {
+            if (nv.isConnected() == true)
+                ImGui::Text("You are connected");
+            else
+            {
+                ImGui::Text("You are not connected");
+                ImGui::SameLine();
+                if (ImGui::Button("Connect"))
+                    nv.connect();
+            }
+        }
+        ImGui::NewLine();
     }
-    else
-    {
-        ImGui::Text("You need to be connected to access location information.");
-    }
-    ImGui::NewLine();
-
-
-    // Actions
-    ImGui::SeparatorText("Actions");
-    ImGui::NewLine();
     
-    if (nv.isConnected() == true && nv.isLogged() == true)
+    if (ImGui::CollapsingHeader("Settings", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        if (ImGui::Button("Disconnect"))
-            nv.disconnect();
-        ImGui::SameLine();
+        ImGui::Checkbox("Firewall", &nv._firewall);
+        ImGui::Checkbox("Routing", &nv._routing);
+        ImGui::Checkbox("Analytics", &nv._analytics);
+        ImGui::Checkbox("Kill Switch", &nv._killSwitch);
+        ImGui::Checkbox("Threat Protection Lite", &nv._ThreatProtectionLite);
+        ImGui::Checkbox("Auto-connect", &nv._autoConnect);
+        ImGui::Checkbox("IPv6", &nv._IPv6);
+        ImGui::Checkbox("Meshnet", &nv._meshnet);
+        ImGui::Checkbox("DNS", &nv._dns);
+        ImGui::Checkbox("LAN Discovery", &nv._lanDiscovery);
+        ImGui::NewLine();
     }
-    if (nv.isLogged() == true)
-    {
-        if (ImGui::Button("Logout") && nv.isLogged() == true)
-            nv.logout();
-        ImGui::SameLine(); 
-    }
-    if (ImGui::Button("Exit"))
-        running = false;
-    
+
+    // SUDVPN LOGO
+    ImGui::SetCursorPosX((io.DisplaySize.x - logo_width) / 2);
+    ImGui::SetCursorPosY((io.DisplaySize.y - logo_width) - 50);
+    ImGui::Image(logo_texture, ImVec2(logo_width, logo_height));
+
     // DO NOT REMOVE
     ImGui::End();
 }
@@ -217,4 +199,65 @@ void UserInterface::destroy(void)
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
+}
+
+bool UserInterface::LoadTextureFromFile(const char* filename, SDL_Texture** texture_ptr, int* width, int* height, SDL_Renderer* renderer) {
+    int channels;
+    unsigned char* data = stbi_load(filename, width, height, &channels, 0);
+
+    if (data == nullptr) {
+        fprintf(stderr, "Failed to load image: %s\n", stbi_failure_reason());
+        return false;
+    }
+
+    SDL_Surface* surface = SDL_CreateRGBSurfaceFrom((void*)data, *width, *height, channels * 8, channels * *width,
+                                                    0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+
+    if (surface == nullptr) {
+        fprintf(stderr, "Failed to create SDL surface: %s\n", SDL_GetError());
+        return false;
+    }
+
+    *texture_ptr = SDL_CreateTextureFromSurface(renderer, surface);
+
+    if ((*texture_ptr) == nullptr) {
+        fprintf(stderr, "Failed to create SDL texture: %s\n", SDL_GetError());
+    }
+
+    SDL_FreeSurface(surface);
+    stbi_image_free(data);
+
+    return true;
+}
+
+void UserInterface::setCustomStyle(void)
+{
+    // Get the current ImGui style
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    // Set custom style parameters
+    //style.WindowRounding = 5.0f;
+    //style.FrameRounding = 4.0f;
+    //style.ScrollbarRounding = 12.0f;
+
+    ImColor Main_color = ImColor(254, 138, 156, 200);
+    ImColor Hovered_color = ImColor(254, 138, 156, 255);
+    ImColor Active_color = ImColor(254, 138, 156, 255);
+
+    // Set custom colors
+    ImVec4* colors = style.Colors;
+    //colors[ImGuiCol_Text] = ImVec4(1.0f, 0, 1.0f, 1.0f);
+    colors[ImGuiCol_Separator] = Main_color;
+    //colors[ImGuiCol_WindowBg] = ImVec4(0.13f, 0.14f, 0.15f, 1.00f);
+    colors[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.21f, 0.22f, 1.00f);
+    colors[ImGuiCol_Button] = Main_color;
+    colors[ImGuiCol_ButtonHovered] = Hovered_color;
+    colors[ImGuiCol_ButtonActive] = Active_color;
+    colors[ImGuiCol_MenuBarBg] = Main_color;
+    colors[ImGuiCol_ScrollbarBg] = Main_color;
+    
+    colors[ImGuiCol_Header] = Main_color;
+    colors[ImGuiCol_HeaderHovered] = Hovered_color;
+    colors[ImGuiCol_HeaderActive] = Active_color;
+    colors[ImGuiCol_CheckMark] = Main_color;
 }
